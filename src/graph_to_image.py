@@ -2,7 +2,12 @@ import matplotlib.image as mpimg
 import numpy as np
 import json
 
-graph=open("../../ressources/blagnac.graph","r")
+graph_path = "../graph/blagnac.graph"
+image_path = "../world/blagnac.jpg"
+image_with_graph_path = "../world/blagnac_graph.jpg"
+image_prohibited_area = "../world/balgnac_area.jpg"
+
+graph=open(graph_path,"r")
 data=""
 for l in graph:
 	data=data+l
@@ -45,7 +50,7 @@ LN2 : [edge1_arrival_node, edge2_arrival_node, ... ](id of node)"""
 
 
 #Then we draw the graph on the image
-image=mpimg.imread("../../ressources/blagnac.jpg")
+image=mpimg.imread(image_path)
 
 #let's place the nodes on the image
 for i in range(len(LX)):
@@ -65,7 +70,7 @@ for i in range(len(LN1)):
 
 	b=-a*LX[LN1[i]]+LY[LN1[i]]
 	X=range(abs(LX[LN2[i]]-LX[LN1[i]]))
-	
+
 	for x in X:
 		y=int(a*(x+min(LX[LN1[i]],LX[LN2[i]]))+b)
 		image[y][x+min(LX[LN1[i]],LX[LN2[i]])]=(0, 0, 0)
@@ -75,4 +80,61 @@ for i in range(len(LN1)):
 		x=int((y+min(LY[LN1[i]],LY[LN2[i]]) - b)/a  )
 		image[y+min(LY[LN1[i]],LY[LN2[i]])][x]=(0, 0, 0)
 
-mpimg.imsave("../osmosis_simulation/models/blagnac.jpg",image)
+mpimg.imsave(image_with_graph_path,image)
+
+
+"""same operations to deaw the 'abstract' map of the airport (green and red)"""
+
+
+image=mpimg.imread(image_path)
+
+for i in range(len(image)):
+	for j in range(len(image[0])):
+		image[i][j]=(255,0,0)
+
+for i in range(len(LX)):
+	for taillex in range(20):
+		for tailley in range(20):
+			image[LY[i]-10+taillex][LX[i]-10+tailley]=(0, 255, 0)
+
+for i in range(len(LN1)):
+	LN1[i]=float(LN1[i])
+
+
+for i in range(len(LN1)):
+	LN1[i]=int(LN1[i])
+for i in range(len(LN2)):
+	LN2[i]=int(LN2[i])
+
+
+for i in range(len(LN1)):
+	deltax=float(LX[LN2[i]]-LX[LN1[i]])
+	deltay=float(LY[LN2[i]]-LY[LN1[i]])
+
+	if deltax==0:
+		a=9999999999
+	else:
+		a=deltay/deltax
+
+	b=-a*LX[LN1[i]]+LY[LN1[i]]
+
+	X=range(abs(LX[LN2[i]]-LX[LN1[i]]))
+	for x in X:
+		for l in range(15):
+			y=int(a*(x+min(LX[LN1[i]],LX[LN2[i]]))+b)
+			if y<len(image):
+				if y+l<len(image):
+					if y-l>0:
+						image[y-l][x+min(LX[LN1[i]],LX[LN2[i]])]=(0, 255, 0)
+						image[y+l][x+min(LX[LN1[i]],LX[LN2[i]])]=(0, 255, 0)
+
+	Y=range(abs(LY[LN2[i]]-LY[LN1[i]]))
+	for y in Y:
+		for l in range(15):
+				x=int((y+min(LY[LN1[i]],LY[LN2[i]])-b)/a)
+				if x+l<len(image[0]):
+					if x-l>0:
+							image[y+min(LY[LN1[i]],LY[LN2[i]])][x-l]=(0, 255, 0)
+							image[y+min(LY[LN1[i]],LY[LN2[i]])][x+l]=(0, 255, 0)
+
+mpimg.imsave(image_prohibited_area,image)
