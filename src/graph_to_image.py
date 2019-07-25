@@ -2,7 +2,11 @@ import matplotlib.image as mpimg
 import numpy as np
 import json
 
-graph=open("../../ressources/blagnac.graph","r")
+graph_path = "../graph/blagnac.graph"
+image_path = "../world/blagnac.jpg"
+image_with_graph_path = "../world/blagnac_graph.jpg"
+
+graph=open(graph_path,"r")
 data=""
 for l in graph:
 	data=data+l
@@ -45,7 +49,7 @@ LN2 : [edge1_arrival_node, edge2_arrival_node, ... ](id of node)"""
 
 
 #Then we draw the graph on the image
-image=mpimg.imread("../../ressources/blagnac.jpg")
+image=mpimg.imread(image_path)
 
 #let's place the nodes on the image
 for i in range(len(LX)):
@@ -75,4 +79,4 @@ for i in range(len(LN1)):
 		x=int((y+min(LY[LN1[i]],LY[LN2[i]]) - b)/a  )
 		image[y+min(LY[LN1[i]],LY[LN2[i]])][x]=(0, 0, 0)
 
-mpimg.imsave("../osmosis_simulation/models/blagnac.jpg",image)
+mpimg.imsave(image_with_graph_path,image)
